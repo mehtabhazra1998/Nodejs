@@ -4,11 +4,23 @@ const url='mongodb://localhost:27017/confusion';
 const connect=mongoose.connect(url);
 connect.then((db)=>{
 	console.log('Connected to Server');
-	Dishes.create({name:"Mehtaab Singh",description:"New Dish"}).then((d)=>{
+	Dishes.create({name:"Mehtaab Singh Hajraw",description:"New Dish"}).then((d)=>{
 		console.log('Saved '+d);
-		return Dishes.find({}).exec();
+		return Dishes.findByIdAndUpdate(d._id,{
+			$set : {description:"Updated Dish"}
+		},{
+			new:true
+		}).exec();
 	}).then((d)=>{
 		console.log('Found '+d);
+		d.comments.push({
+			rating:5,
+			comment:"I am getting a sinking feeling",
+			author:'Mehtaab Singh'
+		});
+		return d.save();
+	}).then((dish)=>{
+		console.log(dish._id);
 		return Dishes.remove({});
 		//return Dishes.find({});
 	}).then(()=>{
@@ -20,4 +32,4 @@ connect.then((db)=>{
 		console.log('Still Closing');
 		mongoose.connection.close();
 	});
-})
+});
